@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'ridepalmyride'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_2ce87401574847a88ce276abb5a40f19 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_be36c5a74a00494ab7f4a86749e668c9 }}
         package: ${{env.DOTNET_ROOT}}/myapp 
