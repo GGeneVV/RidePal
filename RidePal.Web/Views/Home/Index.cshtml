@@ -1,0 +1,194 @@
+﻿@model HomeIndexVM
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["PageId"] = "main";
+    ViewData["HasHiddenAudio"] = true;
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+}
+
+
+<div class="paralax-img img-1">
+    <div class="px-5 py-4 h-100 d-flex flex-column justify-content-end" style="background: #80808052;">
+        <span>Travel with music <i class="fas fa-route text-primary"></i></span>
+        <h1>RidePal Travel</h1>
+        <span>7,459 tracks <i class="fas fa-headphones-alt text-primary"></i></span>
+    </div>
+    <img class="d-none" id="main-img" src="~/images/ribblehead-viaduct-2443085_1920.jpg" alt="">
+</div>
+
+<div class="gradient-bg"></div>
+
+<div class="main-view-grid p-5">
+    <div id="playlist-result"></div>
+    <div class="popular">
+        <h2>Popular</h2>
+
+
+        <!-- TRACK ROWS  5 TRACKS-->
+        @for (int i = 0; i < Model.PopularTracks.Count(); i++)
+        {
+            var track = Model.PopularTracks.ElementAt(i);
+            var index = i + 1;
+            var time = track.Duration / 60 + ":" + track.Duration % 60;
+            <!-- TEMPLATE TRACK ROW -->
+            <div data-id="@track.Id" onclick="playSongByPreview('@track.Preview', '@track.Id')" class="tracklist-row">
+                <div class="index justify-content-center">@index</div>
+                <div class="title">@track.Title</div>
+                <div class="rank justify-content-center">@track.Rank</div>
+                <div class="duration justify-content-center">@time</div>
+            </div>
+            <!-- TEMPLATE TRACK ROW / END -->
+
+        }
+
+        <div class="see-more">
+            <a asp-action="Index" asp-controller="Tracks" style="padding: 16px;">See more</a>
+        </div>
+        <!-- TRACK ROWS / END -->
+    </div>
+    <div class="generate-playlist">
+        <form id="form-generate" asp-action="GeneratePlaylist" asp-controller="Playlists" method="post">
+            @Html.TextBoxFor(m => m.PlaylistConfig.Title);
+            @for (var i = 0; i < Model.PlaylistConfig.GenreConfigs.Count; i++)
+            {
+
+                @Html.HiddenFor(m => Model.PlaylistConfig.GenreConfigs[i].Percentage)
+                @Html.TextBoxFor(m => Model.PlaylistConfig.GenreConfigs[i].Name)
+                @Html.CheckBoxFor(m => Model.PlaylistConfig.GenreConfigs[i].IsChecked)
+            }
+            <h2>Generate Playlist</h2>
+            <div class="playlist-generator">
+                <label class="label-from" for="from">From</label>
+                <div class="from-dest">
+                    <div onclick="getLocation()" id="get-location"><i class="fas fa-map-marker-alt"></i></div>
+                    <input required class="input-from" id="from" name="from" type="text">
+                </div>
+                <label for="to">to</label>
+                <input required id="to" name="to" type="text">
+            </div>
+            <div class="shuffle">
+                <input type="hidden" id="travelDur" name="travelDuration" value="" />
+                <button type="submit">shuffle</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="top-playlists">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Playlists</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Playlists" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 TRACKS -->
+
+            @for (int i = 0; i < Model.TopPlaylists.Count(); i++)
+            {
+                var playlist = Model.TopPlaylists.ElementAt(i);
+                var firstTrack = playlist.TrackPlaylists.Select(t => t.Track).FirstOrDefault();
+                <!-- TEMPLATE CARD -->
+                <div class="ridepal-card">
+                    <a asp-action="NowListening" asp-controller="Playlists" asp-route-id="@playlist.Id" class="card-play-button bg-success">
+                        <span><i class="fas fa-play"></i></span>
+                    </a>
+                    <div class="img d-flex justify-content-center align-items-center">
+                        <img src="@firstTrack.Artist.Picture" alt="" />
+                    </div>
+                    <h4 class="title">@playlist.Title</h4>
+                </div>
+                <!-- TEMPLATE CARD / END -->
+            }
+
+            <!-- TOP TRACKS / END -->
+        </div>
+    </div>
+
+
+    <div class="top-tracks">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Tracks</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Tracks" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 TRACKS -->
+
+            @for (int i = 0; i < Model.TopTracks.Count(); i++)
+            {
+                var track = Model.TopTracks.ElementAt(i);
+                <!-- TEMPLATE CARD -->
+                <div data-id="@track.Id" class="ridepal-card">
+                    <a onclick="playSongByPreview('@track.Preview', '@track.Id')" class="card-play-button bg-success">
+                        <span><i class="fas fa-play"></i></span>
+                    </a>
+                    <div class="img d-flex justify-content-center align-items-center">
+                        <img src="@track.Artist.Picture" alt="" />
+                    </div>
+                    <h4 class="title">@track.Title</h4>
+                    <div class="artist text-muted">@track.Artist.Name</div>
+                </div>
+                <!-- TEMPLATE CARD / END -->
+            }
+
+            <!-- TOP TRACKS / END -->
+        </div>
+    </div>
+    <div class="top-artists">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Artists</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Artists" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 Artists -->
+            @for (int i = 0; i < Model.TopArtists.Count(); i++)
+            {
+                var artist = Model.TopArtists.ElementAt(i);
+                <!-- TEMPLATE CARD -->
+                <a asp-action="Details" asp-controller="Artists" asp-route-id="@artist.Id">
+                    <div class="ridepal-card">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <img src="@artist.Picture" alt="" class="img-round" />
+                        </div>
+                        <h4 class="title">@artist.Name</h4>
+                    </div>
+                </a>
+                <!-- TEMPLATE CARD / END -->
+            }
+
+
+            <!-- TOP TRACKS / END -->
+        </div>
+    </div>
+
+    <div class="top-albums">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Albums</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Albums" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 Artists -->
+            @for (int i = 0; i < Model.TopAlbums.Count(); i++)
+            {
+                var album = Model.TopAlbums.ElementAt(i);
+                <!-- TEMPLATE CARD -->
+                <div class="ridepal-card">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="@album.Picture" alt="" class="img-round" />
+                    </div>
+                    <h4 class="title">@album.Title</h4>
+                </div>
+                <!-- TEMPLATE CARD / END -->
+            }
+
+
+            <!-- TOP TRACKS / END -->
+        </div>
+    </div>
+</div>
+<!-- MAIN CONTENT / END -->

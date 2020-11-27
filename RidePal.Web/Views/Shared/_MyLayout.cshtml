@@ -1,0 +1,118 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using RidePal.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RidePal.Web</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/main.css" />
+    <link rel="stylesheet" href="~/fontawesome/css/all.css" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+    <main role="main" class="w-100 overflow-auto">
+
+        <div id="@ViewData["PageId"]" class="w-100 position-relative h-100">
+            <div class="main-container">
+
+                <!-- NAVBAR -->
+                <aside class="nav-bar">
+                    <div class="logo">
+                        <div class="brand-img">
+                            <img src="~/images/sound-waves.svg" alt="">
+                        </div>
+                        <span>RidePal</span>
+                    </div>
+                    <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a>
+                    <a class="nav-link" asp-controller="Search" asp-action="Index"><i class="fas fa-search"></i> Search</a>
+                    <a class="nav-link" asp-controller="Playlists" asp-action="UserPlaylists"><i class="fas fa-headphones-alt"></i> Your Playlists</a>
+
+                </aside>
+                <!-- NAVBAR / END -->
+                <!-- TOP BAR -->
+                <div class="top-bar">
+                    <header>
+                        <div class="navigation">
+                            <span><i class="fas fa-chevron-left"></i></span>
+                            <span class="disabled"><i class="fas fa-chevron-right"></i></span>
+                            @if (ViewData["HasSearch"] != null && (bool)ViewData["HasSearch"])
+                            {
+                                <div class="search-input">
+                                    <input type="text" placeholder="Search here...">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="login-controller">
+                            <partial name="_LoginPartial" />
+                        </div>
+                    </header>
+                </div>
+                <!-- TOP BAR / END -->
+                <!-- MAIN -->
+                <main class="main-view">
+                    <div class="main-view-container">
+                        <div class="os-host">
+                            <!-- MAIN CONTENT -->
+                            @RenderBody()
+                            <!-- MAIN CONTENT / END -->
+                        </div>
+                        <div class="loading">
+                            <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                                <img src="~/images/25.svg" alt="Loading...">
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <!-- MAIN / END -->
+            </div>
+        </div>
+    </main>
+    @if (ViewData["HasHiddenAudio"] != null && (bool)ViewData["HasHiddenAudio"])
+    {
+        <script>
+            var song = new Audio();
+
+            function playSongByPreview(preview, id) {
+                if (preview && id) {
+                    $('[data-id]').each(function () {
+                        $(this).removeClass('active')
+                    });
+                    $(`[data-id=${id}]`).addClass('active');
+                    if (song.src == preview) {
+                        if (song.paused) {
+                            song.src = preview;
+                            song.play();
+                            $(`[data-id=${id}]`).addClass('active');
+                        }
+                        else {
+                            song.pause();
+                            $('[data-id]').each(function () {
+                                $(this).removeClass('active')
+                            });
+                        }
+                    }
+                    else {
+                        song.src = preview;
+                        song.play();
+                    }
+                }
+            }
+        </script>
+    }
+
+    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+

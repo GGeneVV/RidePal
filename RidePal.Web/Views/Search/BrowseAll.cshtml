@@ -1,0 +1,115 @@
+﻿@model BrowseAllVM
+
+@{
+    ViewData["Title"] = "Browse All";
+    ViewData["PageId"] = "search";
+    ViewData["HasSearch"] = true;
+    ViewData["HasHiddenAudio"] = true;
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+}
+
+<div id="search-result">
+    <div class="search-all-view-grid p-5">
+        <div class="top-result">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Top result</h2>
+                <div class="see-more invisible">
+                    <a href="#" class="s" style="padding: 16px;">See more</a>
+                </div>
+            </div>
+            @{ 
+                var topResult = Model.Tracks.FirstOrDefault();
+            }
+            <div data-id="@topResult.Id" onclick="playSongByPreview('@topResult.Preview', '@topResult.Id')" class="ridepal-card">
+                <img src="@topResult.Artist.Picture" alt="">
+                <span class="title">@topResult.Title</span>
+                <span>@topResult.Artist.Name</span>
+            </div>
+        </div>
+
+        <div class="songs">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Songs</h2>
+                <div class="see-more">
+                    <a asp-action="Index" asp-controller="Tracks" asp-route-searchString="@ViewData["searchString"]" style="padding: 16px;">See more</a>
+                </div>
+            </div>
+            @for (int i = 1; i < Model.Tracks.Count; i++)
+            {
+                var track = Model.Tracks.ElementAt(i);
+                <div data-id="@track.Id" onclick="playSongByPreview('@track.Preview', '@track.Id')" class="tracklist-row">
+                    <div class="index justify-content-center img">
+                        <img src="@track.Artist.Picture" alt="">
+                    </div>
+                    <div class="title">@track.Title</div>
+                    <div class="rank justify-content-center">@track.Rank</div>
+                    <div class="duration justify-content-center">@track.Duration</div>
+                </div>
+            }
+
+        </div>
+
+
+        <div class="artists">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Artists</h2>
+                <div class="see-more">
+                    <a asp-action="Index" asp-controller="Artists" asp-route-searchString="@ViewData["searchString"]" class="s" style="padding: 16px;">See more</a>
+                </div>
+            </div>
+            <div class="grid-cards">
+                <!-- TOP Artists -->
+                @for (int i = 0; i < Model.Artists.Count; i++)
+                {
+                    var artist = Model.Artists.ElementAt(i);
+                    <!-- TEMPLATE CARD -->
+                    <div class="ridepal-card">
+                        <div class="img d-flex justify-content-center align-items-center">
+                            <img src="@artist.Picture" alt="" class="img-round" />
+                        </div>
+                        <h4 class="title">@artist.Name</h4>
+                    </div>
+                    <!-- TEMPLATE CARD / END -->
+                }
+                <!-- TOP Artists / END -->
+            </div>
+        </div>
+
+
+
+        <div class="albums">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Albums</h2>
+                <div class="see-more">
+                    <a asp-action="Index" asp-controller="Albums" asp-route-searchString="@ViewData["searchString"]" class="s" style="padding: 16px;">See more</a>
+                </div>
+            </div>
+            <div class="grid-cards">
+                <!-- TOP TRACKS -->
+                @for (int i = 0; i < Model.Albums.Count; i++)
+                {
+                    var album = Model.Albums.ElementAt(i);
+                    <!-- TEMPLATE CARD -->
+                    <div class="ridepal-card">
+                        <a class="card-play-button bg-success">
+                            <span><i class="fas fa-play"></i></span>
+                        </a>
+                        <div class="img d-flex justify-content-center align-items-center">
+                            <img src="@album.Picture" alt="" />
+                        </div>
+                        <h4 class="title">@album.Title</h4>
+                        <div class="artist text-muted">@album.Artist.Name</div>
+                    </div>
+                    <!-- TEMPLATE CARD / END -->
+                }
+                <!-- TOP TRACKS / END -->
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

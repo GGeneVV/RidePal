@@ -1,0 +1,103 @@
+﻿@using X.PagedList;
+
+@model IPagedList<ArtistVM>
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["PageId"] = "main";
+    ViewData["HasHiddenAudio"] = true;
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+}
+
+
+
+<div class="paralax-img img-1">
+    <div class="px-5 py-4 h-100 d-flex flex-column justify-content-end" style="background: #80808052;">
+        <span>Travel with music <i class="fas fa-route text-primary"></i></span>
+        <h1>Artist</h1>
+        <span>7,459 tracks <i class="fas fa-headphones-alt text-primary"></i></span>
+    </div>
+    <img class="d-none" id="main-img" src="~/images/ribblehead-viaduct-2443085_1920.jpg" alt="">
+    @*Can change img url*@
+</div>
+<div class="gradient-bg"></div>
+<div class="track-index-view-grid p-5">
+    <div class="songs">
+        <!-- TRACK ROWS -->
+
+        @{
+            var hasNext = Model.HasNextPage ? "true" : "false";
+        }
+        <div>
+            <input id="pageNumber" type="hidden" value="@Model.PageNumber" />
+            <input id="hasNext" type="hidden" value="@hasNext" />
+            <div class="grid-cards" id="table-results">
+                <!-- TOP 5 TRACKS -->
+
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var artist = Model.ElementAt(i);
+                    <!-- TEMPLATE CARD -->
+                    <a asp-action="Details" asp-controller="Artists" asp-route-id="@artist.Id">
+                        <div class="ridepal-card">
+                            <div class="img d-flex justify-content-center align-items-center">
+                                <img src="@artist.Picture" alt="" class="img-round" />
+                            </div>
+                            <h4 class="title">@artist.Name</h4>
+                            <!--<div class="artist text-muted">@artist.Name</div>-->
+                        </div>
+                    </a>
+                    <!-- TEMPLATE CARD / END -->
+                }
+
+                <!-- TOP TRACKS / END -->
+            </div>
+        </div>
+
+        <!-- TRACK ROWS / END -->
+    </div>
+</div>
+
+<script>
+    $(".os-host").on("scroll", function () {
+
+        if ($(this).scrollTop() > 100) {
+            $("#main .top-bar").addClass("sticky-scroll");
+        }
+        else {
+            $("#main .top-bar").removeClass("sticky-scroll");
+        }
+        var scrollTop = Math.ceil($(this)[0].scrollTop);
+
+        if (scrollTop == ($(this)[0].scrollHeight - $(this)[0].offsetHeight)) {
+            var pageNumber = parseInt($('#pageNumber').val());
+            var sortOrder = $.urlParam('sortOrder');
+            var searchString = $.urlParam('searchString');
+            var hasNext = $('#hasNext').val();
+            console.log("scrolled to bottom");
+
+            if (hasNext == 'true') {
+                pageNumber += 1;
+                var data = { pageNumber, sortOrder, searchString };
+                $.ajax({
+                    type: "GET",
+                    data: data,
+                    url: window.location.href,
+                    beforeSend: function () {
+                        $(".loading").show();
+                    },
+                    success: function (data) {
+                        var response = $(data).find('#table-results')[0];
+                        var pageNumber = parseInt($(data).find('#pageNumber').val());
+                        $('#pageNumber').val(pageNumber);
+                        $('#table-results').append(response.innerHTML);
+                    },
+                    complete: function (data) {
+                        $(".loading").hide();
+                    },
+                });
+            }
+
+        }
+    });
+</script>

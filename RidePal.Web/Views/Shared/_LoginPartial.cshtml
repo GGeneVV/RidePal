@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using RidePal.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+        @*<li class="nav-item">
+            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+        </li>*@
+    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+        <button id="logout" type="submit" class="login">Log out</button>
+    </form>
+}
+else
+{
+    <a class="signup" id="register" asp-area="" asp-controller="Account" asp-action="SignUp">Sign up</a>
+    <a class="login" id="login" asp-area="" asp-controller="Account" asp-action="Login">Log in</a>
+}

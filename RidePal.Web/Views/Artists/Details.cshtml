@@ -1,0 +1,80 @@
+﻿@model ArtistVM
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["PageId"] = "main";
+    ViewData["HasHiddenAudio"] = true;
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+}
+
+
+<div class="paralax-img img-1" style="background-image: url(@Model.Picture)">
+    <div class="px-5 py-4 h-100 d-flex flex-column justify-content-end" style="background: #80808052;">
+        <span>Travel with music <i class="fas fa-route text-primary"></i></span>
+        <h1>RidePal Travel</h1>
+        <span>7,459 tracks <i class="fas fa-headphones-alt text-primary"></i></span>
+    </div>
+    <img class="d-none" id="main-img" src="@Model.Picture" alt="">
+    @*Can change img url*@
+</div>
+
+<div class="gradient-bg"></div>
+
+<div class="main-view-grid p-5">
+
+    <div class="top-tracks">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Tracks</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Tracks" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 TRACKS -->
+
+            @for (int i = 0; i < Model.Tracks.Count(); i++)
+            {
+                var track = Model.Tracks.ElementAt(i);
+                <!-- TEMPLATE CARD -->
+                <div data-id="@track.Id" class="ridepal-card">
+                    <a onclick="playSongByPreview('@track.Preview', '@track.Id')" class="card-play-button bg-success">
+                        <span><i class="fas fa-play"></i></span>
+                    </a>
+                    <div class="img d-flex justify-content-center align-items-center">
+                        <img src="@track.Artist.Picture" alt="" />
+                    </div>
+                    <h4 class="title">@track.Title</h4>
+                    <div class="artist text-muted">@track.Artist.Name</div>
+                </div>
+                <!-- TEMPLATE CARD / END -->
+            }
+
+            <!-- TOP TRACKS / END -->
+        </div>
+    </div>
+
+    <div class="top-albums">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Top Albums</h2>
+            <div class="see-more">
+                <a asp-action="Index" asp-controller="Albums" style="padding: 16px;">See more</a>
+            </div>
+        </div>
+        <div class="grid-cards">
+            <!-- TOP 5 Artists -->
+            @for (int i = 0; i < Model.Albums.Count(); i++)
+            {
+                var album = Model.Albums.ElementAt(i);
+                <!-- TEMPLATE CARD -->
+                <div class="ridepal-card">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="@album.Picture" alt="" class="img-round" />
+                    </div>
+                    <h4 class="title">@album.Title</h4>
+                </div>
+                <!-- TEMPLATE CARD / END -->
+            }
+            <!-- TOP Albums / END -->
+        </div>
+    </div>
+</div>
+<!-- MAIN CONTENT / END -->

@@ -1,0 +1,89 @@
+﻿@model LoginVM
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<!--<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form id="account" method="post">
+                <h4>Use a local account to log in.</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="UserName"></label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label asp-for="RememberMe">
+                            <input asp-for="RememberMe" />
+                            @Html.DisplayNameFor(m => m.RememberMe)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+                <div class="form-group">
+                    <p>-->
+@*<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>*@
+<!--</p>
+<p>-->
+@*<a asp-page="./Register" asp-route-returnUrl="">Register as a new user</a>*@
+<!--</p>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+-->
+
+<div class="container vh-100">
+    <div class="bg-login"></div>
+    <div class="py-100 h-100">
+        <div class="row justify-content-end align-items-center h-100">
+            <div class="col-md-4 py-5 px-4 bg-white frame">
+                <section>
+                    <form asp-controller="Account" asp-action="Login" method="post">
+                        <h1 class="gr-h-family text-primary m-0">@ViewData["Title"]</h1>
+                        <h5 class="text-muted mb-4">Use an account to log in.</h5>
+                        <hr />
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="UserName"></label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="submit" class="mbtn-primary px-4">Log in</button>
+                            </div>
+                            <div>
+                                <a asp-controller="Account" asp-action="Register">Don't have account register</a>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

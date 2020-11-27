@@ -1,0 +1,149 @@
+﻿@model PlaylistVM
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["PageId"] = "now-listening";
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+    var first = Model.TrackPlaylists.FirstOrDefault();
+}
+
+<div class="now-listening-grid">
+
+    <div class="current-song-bg-img" style="background-image: url(@first.Track.Artist.Picture)"></div>
+
+    <div class="current-song px-5 py-3">
+        <h2 class="pb-4">
+            <i class="fas fa-headphones-alt mr-2"></i> Now Listening
+            @Model.Title
+        </h2>
+        <div>
+            <div class="img-frame mb-5">
+                <img id="current-song-img" src="@first.Track.Artist.Picture" alt="" width="40%">
+            </div>
+            <h2 id="current-song-title" class="mb-3">@first.Track.Title</h2>
+            <h4 id="current-song-artist">@first.Track.Artist.Name</h4>
+            <span id="current-song-genre">@first.Track.Genre.Name</span>
+        </div>
+    </div>
+
+    <div class="song-list">
+        @for (int i = 0; i < Model.TrackPlaylists.Count; i++)
+        {
+            var track = Model.TrackPlaylists.ElementAt(i).Track;
+
+            <!-- TEMPLATE TRACK ROW -->
+            <div onclick="playThisSong(@i)" data-index="@i" data-preview="@track.Preview" data-img="@track.Artist.Picture" data-artist="@track.Artist.Name" data-genre="@track.Genre.Name" data-title="@track.Title" class="tracklist-row">
+                <div class="index justify-content-center position-relative">
+                    <div class="play-button-active"><i class="fas fa-play"></i></div>
+                    <img src="@track.Artist.Picture" alt="">
+                </div>
+                <div class="title">@track.Title</div>
+                <div class="rank justify-content-center">@track.Artist.Name</div>
+                <div class="duration justify-content-center">@track.Duration</div>
+            </div>
+            <!-- TEMPLATE TRACK ROW / END -->
+        }
+
+    </div>
+    <div class="playlist-controls">
+        <div class="btn-controls">
+            <button id="prev" class="prev-next" onclick="prevSong()" type="button"><i class="fas fa-step-backward"></i></button>
+            <button id="play" onclick="playOrPauseSong()" type="button"><i class="fas fa-pause"></i></button>
+            <button id="next" class="prev-next" onclick="nextSong()" type="button"><i class="fas fa-step-forward"></i></button>
+        </div>
+        <div class="duration">
+            <div id="fill-bar" class="fill"></div>
+        </div>
+    </div>
+</div>
+@*https://localhost:5001/Playlists/NowListening?id=40436ee7-96d3-4495-851e-08d88d324344*@
+<script>
+
+    var songs = [];
+
+    $('.tracklist-row').each(function () {
+        let img = $(this).data('img');
+        let preview = $(this).data('preview');
+        let artist = $(this).data('artist');
+        let genre = $(this).data('genre');
+        let title = $(this).data('title');
+        songs.push([img, preview, artist, genre, title]);
+    });
+
+    var song = new Audio();
+    var currentSong = 0;
+
+    function playSong() {
+        if (!songs[currentSong][1]) {
+            currentSong++;
+            playSong();
+        }
+        $('.tracklist-row').each(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+            }
+        });
+        $(`.tracklist-row[data-index=${currentSong}]`).addClass('active');
+
+        $('.current-song-bg-img').attr('style', 'background-image: url('+songs[currentSong][0]+')');
+        $('#current-song-img').attr('src', songs[currentSong][0]);
+        $('#current-song-title').html(songs[currentSong][4]);
+        $('#current-song-artist').html(songs[currentSong][2]);
+        $('#current-song-genre').html(songs[currentSong][3]);
+        song.src = songs[currentSong][1];
+        song.play();
+    }
+
+    function playThisSong(index) {
+        if (!songs[index][1]) {
+            currentSong++;
+            playSong();
+        }
+        if (currentSong == index) {
+            playOrPauseSong();
+        }
+        else {
+            currentSong = index;
+            playSong();
+        }
+    }
+    $(document).ready(function () {
+        playSong();
+    });
+    function playOrPauseSong() {
+        if (song.paused) {
+            song.play();
+            $('#play').html('<i class="fas fa-pause"></i>');
+        }
+        else {
+            song.pause();
+            $('#play').html('<i class="fas fa-play"></i>');
+        }
+    }
+
+    song.addEventListener('timeupdate', function () {
+        var position = song.currentTime / song.duration;
+        $('#fill-bar').css("width", position * 100 + '%');
+    })
+
+    song.addEventListener('ended', function () {
+        nextSong();
+    })
+
+
+    function nextSong() {
+        currentSong++;
+        if (currentSong > songs.length - 1) {
+            currentSong = 0;
+        }
+        playSong();
+    }
+
+    function prevSong() {
+        currentSong--;
+        if (currentSong < 0) {
+            currentSong = songs.length - 1;
+        }
+        playSong();
+    }
+</script>

@@ -1,0 +1,26 @@
+﻿@model List<GenreVM>
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["PageId"] = "search";
+    ViewData["HasSearch"] = true;
+    Layout = "~/Views/Shared/_MyLayout.cshtml";
+}
+
+<div id="search-result">
+    <h2 class="p-5">Browse All</h2>
+    <div class="search-view-grid px-5">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <!-- GENRE CARD TEMPLATE -->
+            <a asp-action="Index" asp-controller="Genres" asp-route-genreName="@Model[i].Name">
+                <div class="genre-card">
+                    <div class="bg-img" style="background-image:url(@Model[i].Picture)"></div>
+                    <h4>@Model[i].Name</h4>
+                    <img src="@Model[i].Picture" alt="@Model[i].Name">
+                </div>
+            </a>
+            <!-- GENRE CARD TEMPLATE END -->
+        }
+    </div>
+</div>
